@@ -3705,7 +3705,13 @@ ACMD(idsearch)
 		match = MAX_SEARCH;
 	}
 	for(i = 0; i < match; i++) {
-		snprintf(atcmd_output, sizeof(atcmd_output), msg_fd(fd, MSGTBL_SEARCH_RESULT_NAME_ID), item_array[i]->jname, item_array[i]->nameid); // %s: %d
+		struct item link_item = { 0 };
+		link_item.nameid = item_array[i]->nameid;
+		StringBuf buf;
+		StrBuf->Init(&buf);
+		clif->format_itemlink(&buf, &link_item);
+		snprintf(atcmd_output, sizeof(atcmd_output), msg_fd(fd, MSGTBL_SEARCH_RESULT_NAME_ID), StrBuf->Value(&buf), item_array[i]->nameid); // %s: %d
+		StrBuf->Destroy(&buf);
 		clif->message(fd, atcmd_output);
 	}
 	snprintf(atcmd_output, sizeof(atcmd_output), msg_fd(fd, MSGTBL_N_RESULTS_FOUND), match); // %d results found.
